@@ -1,8 +1,11 @@
 # vsim
+
 Vehicle simulation tool. Can mix and match different parts and go vroom vroom skrtt.
-## Usage
+
+## WASM Usage
 
 ### one time
+
 ```bash
 rustup target add wasm32-unknown-unknown
 ```
@@ -12,14 +15,22 @@ cargo install basic-http-server
 ```
 
 ### (re)build
+
 ```bash
-cargo build --target wasm32-unknown-unknown --release
+make build-wasm
 ```
 
-> copy [./target/wasm32-unknown-unknown/release/vsim.wasm] into [./public]
+### running
 
 ```bash
+# this only needs to be run once, and can be left running
 basic-http-server public
 ```
 
-visit `http://127.0.0.1:4000` after to see simulator 
+or
+
+```bash
+make run-wasm
+```
+
+visit `http://127.0.0.1:4000` after to see simulator
