@@ -46,12 +46,12 @@ impl Motor for ElectricMotor {
 }
 
 pub struct VehicleParams {
-    mass: f32,
-    drag_coefficient: f32,
-    rolling_resistance_coefficient: f32,
-    wheel_radius: f32,
-    transmission: Vec<f32>,
-    differential: f32
+    pub mass: f32,
+    pub drag_coefficient: f32,
+    pub rolling_resistance_coefficient: f32,
+    pub wheel_radius: f32,
+    pub transmission: Vec<f32>,
+    pub differential: f32
 }
 
 impl VehicleParams {
