@@ -1,25 +1,30 @@
 use std::f32::consts::PI;
 
+use serde::{Serialize, Deserialize};
+
 const AIR_DENSITY: f32 = 1.29;
 const TAU_DIV_60_INV: f32 = 60.0 / (2.0 * PI);
-const TAU_DIV_60: f32 = 1.0 / TAU_DIV_60_INV;
 
 pub trait Motor {
     fn update_torque(&mut self, rpm: f32) -> f32;
 }
 
+// Electric motor implementation
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ElectricMotor {
     motor_const: f32,
     peak_power: f32,
     peak_torque: f32,
-    base_speed: f32
+    base_speed: f32,
+    redline: f32
 }
 
 impl ElectricMotor {
     pub fn new(
         motor_const: f32,
         supply_current: f32,
-        voltage: f32
+        voltage: f32,
+        redline: f32
     ) -> Self {
         let peak_power: f32 = supply_current * voltage * 0.9;
         let peak_torque: f32 = supply_current * motor_const;
@@ -29,7 +34,8 @@ impl ElectricMotor {
             motor_const,
             peak_power,
             peak_torque,
-            base_speed
+            base_speed,
+            redline
         }
     }
 }
@@ -39,12 +45,33 @@ impl Motor for ElectricMotor {
         if rpm <= self.base_speed {
             self.peak_torque
         } 
-        else {
+        else if rpm <= self.redline {
             (self.peak_power * 30.0)/(rpm * PI)
         }
+        else { 0.0 }
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CTEngine {
+    min_rpm: f32,
+    torque: f32,
+    max_rpm: f32
+}
+
+impl CTEngine {
+    pub fn new(min_rpm: f32, torque: f32, max_rpm: f32) -> Self {
+        Self {min_rpm, torque, max_rpm}
+    }
+}
+
+impl Motor for CTEngine {
+    fn update_torque(&mut self, rpm: f32) -> f32 {
+        if rpm > self.max_rpm {0.0} else {self.torque}
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct VehicleParams {
     mass: f32,
     drag_coefficient: f32,
@@ -77,9 +104,9 @@ impl VehicleParams {
 }
 
 pub struct Vehicle<T: Motor> {
-    motor: T,
-    params: VehicleParams,
-    gear_num: usize,
+    pub motor: T,
+    pub params: VehicleParams,
+    pub gear_num: usize,
     press_throttle: bool,
     pub rpm: f32,
     pub velocity: f32

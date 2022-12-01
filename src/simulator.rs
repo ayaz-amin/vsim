@@ -41,14 +41,17 @@ impl<T: vehicle::Motor> Simulator<T>{
         draw_text(&format!("fps: {}", get_fps()), OFFSET_X, OFFSET_Y, FONT_SIZE, WHITE);
         draw_text(&format!("velocity: {}", self.car.velocity * 3.6), OFFSET_X, OFFSET_Y + 50.0, FONT_SIZE, WHITE);
         draw_text(&format!("rpm: {}", self.car.rpm), OFFSET_X, OFFSET_Y + 100.0, FONT_SIZE, WHITE);
+        draw_text(&format!("gear num: {}", self.car.gear_num), OFFSET_X, OFFSET_Y + 150.0, FONT_SIZE, WHITE);
     }
 
     fn handle_key_down(&mut self) {
         if is_key_down(KeyCode::Up){
             self.car.throttle(true)
-        }else if is_key_down(KeyCode::Q){
-                self.car.shift_up();
-        }else if is_key_down(KeyCode::E){
+        }
+        if is_key_pressed(KeyCode::Q){
+            self.car.shift_up();
+        } 
+        if is_key_pressed(KeyCode::E){
             self.car.shift_down();
         }
     }
